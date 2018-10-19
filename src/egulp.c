@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
                   FreeESEQParams(&eseq); 
 	     } 	  
              DestroyEconfig(config); 
-             printf("PRIVET OT PODMOSKOVNOI BRATVY!\n");
+             //printf("PRIVET OT PODMOSKOVNOI BRATVY!\n");
 	     return(0); 
        }	    
       
@@ -489,7 +489,7 @@ int main(int argc, char *argv[])
       gsl_permutation_free (p);
       gsl_vector_free (QVector);      
       
-      printf("PRIVET OT PODMOSKOVNOI BRATVY!\n"); 
+      //printf("PRIVET OT PODMOSKOVNOI BRATVY!\n");
       return(0); 
 }
 
