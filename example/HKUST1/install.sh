@@ -3,7 +3,7 @@
 echo '*** You need icc: this install.sh is working for deneb.epfl.ch'
 
 module load intel
-cd ../../1_original_download
+cd ../../src
 make
-rm *o
+#rm *o
 mv egulppot ..
