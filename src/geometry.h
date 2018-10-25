@@ -5,8 +5,11 @@ typedef struct tGeometryData {
     double av1[3];            
     double av2[3];            
     double av3[3];
+    double cell_len[3];
+    double cell_ang[3];
     int natoms; 
     double *atoms_xyz; 
+    double *atoms_fract;
     int *atoms_num; 
     int *atoms_base_num; 
     double *atoms_charge; 

@@ -22,26 +22,24 @@
 double matrix_det(double *mat, int n) ; 
 void matrix_inverse(double *mat, int n, double *imat); 
 
+const char *atsym_nospace[] = {"H","He",
+                              "Li","Be","B","C","N","O","F",
+                              "Ne","Na","Mg","Al","Si","P","S","Cl","Ar",
+                              "K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
+                              "Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe",
+                              "Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
+                              "Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr",
+                             "O_N","O_S","O_SH","H_O"};
 
-
-/* standard input geometry... 
-   5th column with charges is 
-   read based on the flag value */ 
-	
 void  InitGeometry(tGeometry *geometry, char *fname)
 {
      FILE *fp; 
-     int i; 
+     int i, a; 
      char tmpstr1[MAXSTRL]; 
-     char tmpstr2[MAXSTRL]; 
-     char tmpstr3[MAXSTRL];
-     char tmpstr4[MAXSTRL];
-     char tmpstr5[MAXSTRL];
+     char atoms_sym[2];
    char fline[100];
    char * tmpstr0;
-   char tmpstr6[100];
-   double A, B, C, a, b, g; 
-     double axis1[3], axis2[3], axis3[3];
+   double tempd; 
    
      fp = fopen(fname, "r"); 
      printf("opening geometry file %s\n", fname); 
@@ -51,103 +49,127 @@ void  InitGeometry(tGeometry *geometry, char *fname)
      }   else { 	 
 	 printf("geometry file %s is open\n", fname); 
 	 
-	 /* read 1 comment lines 
-         fgets(tmpstr1, MAXSTRL, fp); 	
-         printf("Comment line 1 %s", tmpstr1); 
-         */
     while (fgets(fline, 100, fp) != NULL) {
+        //Read the cell parameters from cif
         if (strstr(fline, "_cell_length_a") != NULL) { 
             tmpstr0=strtok(fline, " ");
             tmpstr0=strtok(NULL, " ");
-            A = atof(tmpstr0);
+            geometry->cell_len[0] = atof(tmpstr0);
         }
         if (strstr(fline, "_cell_length_b") != NULL) {
             tmpstr0=strtok(fline, " ");
             tmpstr0=strtok(NULL, " ");
-            B = atof(tmpstr0);
+            geometry->cell_len[1] = atof(tmpstr0);
         }
         if (strstr(fline, "_cell_length_c") != NULL) {
             tmpstr0=strtok(fline, " ");
             tmpstr0=strtok(NULL, " ");
-            C = atof(tmpstr0);
+            geometry->cell_len[2] = atof(tmpstr0);
         }
         if (strstr(fline, "_cell_angle_alpha") != NULL) {
             tmpstr0=strtok(fline, " ");
             tmpstr0=strtok(NULL, " ");
-            a = atof(tmpstr0);
+            geometry->cell_ang[0] = atof(tmpstr0);
         }
         if (strstr(fline, "_cell_angle_beta") != NULL) {
             tmpstr0=strtok(fline, " ");
             tmpstr0=strtok(NULL, " ");
-            b = atof(tmpstr0);
+            geometry->cell_ang[1] = atof(tmpstr0);
         }
         if (strstr(fline, "_cell_angle_gamma") != NULL) {
             tmpstr0=strtok(fline, " ");
             tmpstr0=strtok(NULL, " ");
-            g = atof(tmpstr0);
-         printf("Lattice lenghts: A %10.7f B %10.7f C %10.7f\n", A, B, C );
-         printf("Lattice angles: alpha %10.7f beta %10.7f gamma %10.7f\n", a, b, g );
-        }
-    }
-
-         
-         /* read 3 lattice vectors */ 	 
-	 fscanf(fp, "%s %s %s\n", tmpstr1, tmpstr2, tmpstr3);  
-	 geometry->av1[0] = atof(tmpstr1); 
-	 geometry->av1[1] = atof(tmpstr2); 
-	 geometry->av1[2] = atof(tmpstr3); 
-	 printf("Lattice vector #1 %10.7f %10.7f %10.7f\n", geometry->av1[0],  geometry->av1[1], geometry->av1[2] );  
-	 fscanf(fp, "%s %s %s\n", tmpstr1, tmpstr2, tmpstr3);  
-	 geometry->av2[0] = atof(tmpstr1); 
-	 geometry->av2[1] = atof(tmpstr2); 
-	 geometry->av2[2] = atof(tmpstr3); 
-	 printf("Lattice vector #2 %10.7f %10.7f %10.7f\n", geometry->av2[0],  geometry->av2[1], geometry->av2[2] );  
-     
-	 fscanf(fp, "%s %s %s\n", tmpstr1, tmpstr2, tmpstr3);  
-	 geometry->av3[0] = atof(tmpstr1); 
-	 geometry->av3[1] = atof(tmpstr2); 
-	 geometry->av3[2] = atof(tmpstr3); 
-	 printf("Lattice vector #3 %10.7f %10.7f %10.7f\n", geometry->av3[0],  geometry->av3[1], geometry->av3[2] );  
-	 geometry->dv = cellVolume(geometry->av1, geometry->av2,  geometry->av3); 
-	 printf("unit cell volume is %10.7f\n", geometry->dv); 
-	 
-	 
-	 fscanf(fp, "%s\n", tmpstr1);
-	 geometry->natoms = atoi(tmpstr1);
+            geometry->cell_ang[2] = atof(tmpstr0);
+            //All cell parameters are read: print them and convert to cell matrix
+            printf("Lattice lenghts: A %10.7f B %10.7f C %10.7f\n", geometry->cell_len[0], geometry->cell_len[1], geometry->cell_len[2]);
+            printf("Lattice angles: alpha %10.7f beta %10.7f gamma %10.7f\n", geometry->cell_ang[0], geometry->cell_ang[1], geometry->cell_ang[2]);
+        
+            tempd=(cos(geometry->cell_ang[0]*M_PI/180.0)-cos(geometry->cell_ang[2]*M_PI/180.0)*cos(geometry->cell_ang[1]*M_PI/180.0))/sin(geometry->cell_ang[2]*M_PI/180.0);
+            geometry->av1[0] = geometry->cell_len[0];
+            geometry->av1[1] = 0.0; 
+            geometry->av1[2] = 0.0;
+            geometry->av2[0] = geometry->cell_len[1]*cos(geometry->cell_ang[2]*M_PI/180.0);
+            geometry->av2[1] = geometry->cell_len[1]*sin(geometry->cell_ang[2]*M_PI/180.0);
+            geometry->av2[2] = 0.0;
+            geometry->av3[0] = geometry->cell_len[2]*cos(geometry->cell_ang[1]*M_PI/180.0);
+            geometry->av3[1] = geometry->cell_len[2]*tempd;
+            geometry->av3[2] = geometry->cell_len[2]*sqrt(1-pow(cos(geometry->cell_ang[1]*M_PI/180.0),2.0)-pow(tempd,2.0));
+            printf("Lattice vector #1 %10.7f %10.7f %10.7f\n", geometry->av1[0],  geometry->av1[1], geometry->av1[2] );
+            printf("Lattice vector #2 %10.7f %10.7f %10.7f\n", geometry->av2[0],  geometry->av2[1], geometry->av2[2] );
+            printf("Lattice vector #3 %10.7f %10.7f %10.7f\n", geometry->av3[0],  geometry->av3[1], geometry->av3[2] );
+            geometry->dv = cellVolume(geometry->av1, geometry->av2,  geometry->av3); 
+	    printf("unit cell volume is %10.7f\n", geometry->dv); 
+         }
+         //Now look for the string _atom_site_fract_x, skip the _atom_site section, read the number of atoms, close the file and initialize arrays.
+         if (strstr(fline, "_atom_site_fract_x") != NULL) 
+            break; 
+    }         
+         int countatoms = 0;
+         while (fgets(fline, 100, fp) != NULL) {
+           if (strstr(fline, "_atom_site") != NULL) {
+              strcpy(tmpstr1,fline); //this will remember the last string before the atoms
+           }
+           if ((strstr(fline, "_atom_site") == NULL) && (fline != "\n"))
+              countatoms++;
+         }
+         geometry->natoms = countatoms; 
 	 printf("Number of atoms is %d\n", geometry->natoms); 
-	 if( geometry->natoms < 1)  { 
+         if(geometry->natoms < 1)  { 
 	      printf("Invalid number of atoms...exiting\n"); 
 	      exit(-1); 
 	 }
-
-         allocate_double_array(&(geometry->atoms_xyz), 3*(geometry->natoms), "can not allocate natoms\n"); 
+         allocate_double_array(&(geometry->atoms_xyz), 3*(geometry->natoms), "can not allocate natoms xyz\n");
+         allocate_double_array(&(geometry->atoms_fract), 3*(geometry->natoms), "can not allocate natoms fract\n"); 
          allocate_double_array(&(geometry->atoms_charge), geometry->natoms, "can not allocate atom_charge\n");  
 	 allocate_double_array(&(geometry->input_atoms_charge), geometry->natoms, "can not allocate input_atom_charge\n");     
          allocate_int_array(&(geometry->atoms_num), geometry->natoms, "can not allocate atoms_num\n"); 
 	 allocate_int_array(&(geometry->atoms_base_num), geometry->natoms, "can not allocate atoms_base_num\n"); 
-
-         for(i = 0; i < geometry->natoms; i++) { 
-	         geometry->atoms_charge[i] = 0.0; 
-		 geometry->input_atoms_charge[i] = 0.0; 
-	}	 
-
+         printf("Arrays for atoms allocated\n");
          for(i = 0; i < geometry->natoms; i++) {
-            	      fscanf(fp, "%s %s %s %s %s\n", tmpstr1, tmpstr2, tmpstr3, tmpstr4, tmpstr5);
-		         geometry->atoms_num[i]  = atoi(tmpstr1); 
-		         geometry->atoms_xyz[3*i+0] = atof(tmpstr2); 
-		         geometry->atoms_xyz[3*i+1] = atof(tmpstr3); 
-		         geometry->atoms_xyz[3*i+2] = atof(tmpstr4); 
-		         geometry->input_atoms_charge[i] = atof(tmpstr5); 
-		         printf("%5d %10.7f %10.7f %10.7f %10.7f\n", 
+                 geometry->atoms_charge[i] = 0.0;
+                 geometry->input_atoms_charge[i] = 0.0;
+         }
+         printf("Rewind file %s to read the atoms after line: %s\n", fname, tmpstr1); 
+         rewind(fp);
+         while (fgets(fline, 100, fp) != NULL) {
+           if(strstr(tmpstr1,fline) != NULL) 
+             break;
+         }
+         printf("Reading atoms\n");
+         for(i = 0; i < geometry->natoms; i++) {
+            	      fgets(fline,100,fp);
+                      tmpstr0=strtok(fline, " ");
+                      tmpstr0=strtok(NULL, " ");
+                         strcpy(atoms_sym,tmpstr0);
+                         //lookup the corrisponding atom number
+                         for(a = 0; a < 107; a++) {
+                            if (strcmp(atoms_sym, atsym_nospace[a]) == 0)
+                               geometry->atoms_num[i] = a+1;
+                         }
+                      tmpstr0=strtok(NULL, " "); 
+		         geometry->atoms_fract[3*i+0] = atof(tmpstr0); 
+                      tmpstr0=strtok(NULL, " ");
+                         geometry->atoms_fract[3*i+1] = atof(tmpstr0);
+                      tmpstr0=strtok(NULL, " "); 
+		         geometry->atoms_fract[3*i+2] = atof(tmpstr0); 
+		         geometry->input_atoms_charge[i] = 0.0; //don't read it 
+                         //convert in xyz coordinates
+                         geometry->atoms_xyz[3*i+0]=geometry->atoms_fract[3*i+0]*geometry->av1[0]+geometry->atoms_fract[3*i+1]*geometry->av1[1]+geometry->atoms_fract[3*i+2]*geometry->av1[2];
+                         geometry->atoms_xyz[3*i+1]=geometry->atoms_fract[3*i+0]*geometry->av2[0]+geometry->atoms_fract[3*i+1]*geometry->av2[1]+geometry->atoms_fract[3*i+2]*geometry->av2[2];
+                         geometry->atoms_xyz[3*i+2]=geometry->atoms_fract[3*i+0]*geometry->av3[0]+geometry->atoms_fract[3*i+1]*geometry->av3[1]+geometry->atoms_fract[3*i+2]*geometry->av3[2];
+		         printf("%s %5d %10.7f %10.7f %10.7f %10.7f %10.7f %10.7f %10.7f\n", 
+                                atoms_sym,
 		                geometry->atoms_num[i], 
 		                geometry->atoms_xyz[3*i+0], 
 		                geometry->atoms_xyz[3*i+1], 
-		                geometry->atoms_xyz[3*i+2], 
+		                geometry->atoms_xyz[3*i+2],
+                                geometry->atoms_fract[3*i+0],
+                                geometry->atoms_fract[3*i+1],
+                                geometry->atoms_fract[3*i+2],        
 				geometry->input_atoms_charge[i]); 
          }
 	 fclose(fp); 
      } 
-     
      return; 
 }
 
