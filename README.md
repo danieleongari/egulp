@@ -4,7 +4,7 @@
  
  * Example usage:
  ```
- egulppot HKUST.cif GMP.param configure.input 
+ egulp HKUST.cif GMP.param configure.input 
  ```
 prints files `charge.cif`,`charge.dat`,`charge.xyz` and `energy.dat`.
 
