@@ -1,6 +1,7 @@
 #!/bin/bash
-
-../../egulppot HKUST1.geo GMP.param configure.input > output/egulp.log
-mv charges.dat charges-faps.xyz energy.dat output/
+rm -rf output/
+mkdir output
+../../egulppot HKUST1.cif GMP.param configure.input > output/egulp.log
+mv charges.cif charges.dat charges.xyz energy.dat output/
 
 

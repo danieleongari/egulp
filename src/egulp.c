@@ -108,9 +108,10 @@ int qeqbasetype[MAXELEMENTS] = {1,  2,   3,   4,  5,   6,   7,   8,  9, 10, 11, 
 
 int main(int argc, char *argv[])
 {
-      FILE *outfp;
+      FILE *outdat;
+      FILE *outcif;
+      FILE *outxyz;
       FILE *outen;
-      FILE *fapsfp;   
       int i, iatom, jatom, ibond, status; 
       int iatom_index, jatom_index; 
       double zetah0;
@@ -204,7 +205,6 @@ int main(int argc, char *argv[])
                   FreeESEQParams(&eseq); 
 	     } 	  
              DestroyEconfig(config); 
-             //printf("PRIVET OT PODMOSKOVNOI BRATVY!\n");
 	     return(0); 
        }	    
       
@@ -343,31 +343,66 @@ int main(int argc, char *argv[])
       } else { 
             printf("SCF NOT CONVERGED\n"); 
       }
-      printf("Final charges from EEM:\n"); 
+      printf("Final charges from Qeq:\n"); 
       for (iatom = 0; iatom < geometry.natoms; iatom++) { 
 	        geometry.atoms_charge[iatom] = scf.atoms_charge[iatom];  
 	        printf("%4d %4d %12.7f\n", iatom+1, geometry.atoms_num[iatom], geometry.atoms_charge[iatom]); 
       }	
       
       /* write charges to file */ 
-      outfp = fopen("charges.dat", "w"); 
-      if(outfp != NULL) {
+      outdat = fopen("charges.dat", "w"); 
+      if(outdat != NULL) {
               for (iatom = 0; iatom < geometry.natoms; iatom++) 
-	      fprintf(outfp, "%4d %4d %12.7f\n", iatom+1, geometry.atoms_num[iatom], geometry.atoms_charge[iatom]); 
-	      fclose(outfp); 
+	      fprintf(outdat, "%4d %4d %12.7f\n", iatom+1, geometry.atoms_num[iatom], geometry.atoms_charge[iatom]); 
+	      fclose(outdat); 
       }	
-      
- 
-      fapsfp = fopen("charges-faps.xyz", "w"); 
-      fprintf(fapsfp, "%d\n\n",  geometry.natoms);  
-      if(fapsfp != NULL) {
+      /* write .cif file with charges*/
+      outcif = fopen("charges.cif", "w"); 
+      fprintf(outcif, "\n");
+      fprintf(outcif, "_cell_length_a %12.7f\n", geometry.cell_len[0]);
+      fprintf(outcif, "_cell_length_b %12.7f\n", geometry.cell_len[1]);
+      fprintf(outcif, "_cell_length_c %12.7f\n", geometry.cell_len[2]);
+      fprintf(outcif, "_cell_angle_alpha %12.7f\n", geometry.cell_ang[0]);
+      fprintf(outcif, "_cell_angle_beta %12.7f\n", geometry.cell_ang[1]);
+      fprintf(outcif, "_cell_angle_gamma %12.7f\n", geometry.cell_ang[2]); 
+      fprintf(outcif, "\n"); 
+      fprintf(outcif, "_symmetry_space_group_name_Hall 'P 1'\n"); 
+      fprintf(outcif, "_symmetry_space_group_name_H-M  'P 1'\n");
+      fprintf(outcif, "\n");
+      fprintf(outcif, "loop_\n");
+      fprintf(outcif, "_symmetry_equiv_pos_as_xyz\n");
+      fprintf(outcif, " 'x,y,z' \n");
+      fprintf(outcif, "\n");
+      fprintf(outcif, "loop_\n");
+      fprintf(outcif, "_atom_site_label\n");
+      fprintf(outcif, "_atom_site_type_symbol\n");
+      fprintf(outcif, "_atom_site_fract_x\n");
+      fprintf(outcif, "_atom_site_fract_y\n");
+      fprintf(outcif, "_atom_site_fract_z\n");
+      fprintf(outcif, "_atom_site_charge\n");
+      if(outcif != NULL) {
               for (iatom = 0; iatom < geometry.natoms; iatom++) 
-	      fprintf(fapsfp, "%s %12.7f %12.7f %12.7f %12.7f\n",  atsym[geometry.atoms_base_num[iatom]-1], 
+              fprintf(outcif, "%s  %s  %12.7f %12.7f %12.7f %12.7f\n",  
+                atsym[geometry.atoms_base_num[iatom]-1], 
+                atsym[geometry.atoms_base_num[iatom]-1], 
+                geometry.atoms_fract[3*iatom+0], 
+                geometry.atoms_fract[3*iatom+1], 
+                geometry.atoms_fract[3*iatom+2],   
+                geometry.atoms_charge[iatom]); 
+                fclose(outcif); 
+      }
+      /* write .xyz file with charges*/
+      outxyz = fopen("charges.xyz", "w"); 
+      fprintf(outxyz, "%d\n\n",  geometry.natoms);  
+      if(outxyz != NULL) {
+              for (iatom = 0; iatom < geometry.natoms; iatom++) 
+	      fprintf(outxyz, "%s %12.7f %12.7f %12.7f %12.7f\n",  
+                atsym[geometry.atoms_base_num[iatom]-1], 
 	        geometry.atoms_xyz[3*iatom+0], 
 		geometry.atoms_xyz[3*iatom+1], 
 		geometry.atoms_xyz[3*iatom+2],   
 	        geometry.atoms_charge[iatom]); 
-	        fclose(fapsfp); 
+	        fclose(outxyz); 
       }	
       outen = fopen("energy.dat", "w");
       if(outen != NULL) { 
@@ -412,11 +447,11 @@ int main(int argc, char *argv[])
 	   
 	   printf("integral potential error per MOF %10.7f  (eV)\n",  pot_fitness*grid.dv3); 
 	   printf("potential error per grid point      %10.7f  (eV)\n",  pot_fitness/grid.gridnl);
-           outfp = fopen("potential.dat", "w"); 
-           if(outfp != NULL) {
-	       fprintf(outfp, "PER MOF   %12.7f EV\n",  pot_fitness*grid.dv3); 
-	       fprintf(outfp, "PER POINT %12.7f EV\n",  pot_fitness/grid.gridnl); 
-	       fclose(outfp); 
+           outdat = fopen("potential.dat", "w"); 
+           if(outdat != NULL) {
+	       fprintf(outdat, "PER MOF   %12.7f EV\n",  pot_fitness*grid.dv3); 
+	       fprintf(outdat, "PER POINT %12.7f EV\n",  pot_fitness/grid.gridnl); 
+	       fclose(outdat); 
            }	
 	   free(pot); 
 	   free(atom_charge_diff);   
@@ -450,10 +485,10 @@ int main(int argc, char *argv[])
 		if (func[i] < func_min)  func_min = func[i]; 
 	   } 
 
-           outfp = fopen("range.dat", "w"); 
-           if(outfp != NULL) {
-	       fprintf(outfp, "calculate_pot %d min %10.6f max %10.6f\n",  config.calculate_pot, func_min, func_max ); 
-	       fclose(outfp); 
+           outdat = fopen("range.dat", "w"); 
+           if(outdat != NULL) {
+	       fprintf(outdat, "calculate_pot %d min %10.6f max %10.6f\n",  config.calculate_pot, func_min, func_max ); 
+	       fclose(outdat); 
            }	
 	   /* printf("calling WriteFunctionAsCube...\n");  */ 
 	   WriteFunctionAsCube(config.output_pot_file, grid, geometry.natoms, geometry.atoms_base_num, geometry.atoms_xyz, func);
@@ -489,7 +524,6 @@ int main(int argc, char *argv[])
       gsl_permutation_free (p);
       gsl_vector_free (QVector);      
       
-      //printf("PRIVET OT PODMOSKOVNOI BRATVY!\n");
       return(0); 
 }
 
