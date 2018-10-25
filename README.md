@@ -9,9 +9,9 @@
 prints files `charge.cif`,`charge.dat`,`charge.xyz` and `energy.dat`.
 
  * Consider using one of the following parameters: 
-   1) GMP.param (from UFF) 
-   2) MEPO.param from [Kadantsev et al.](http://pubs.acs.org/doi/10.1021/jz401479k)
-   3) GULP.param same as GMP except for Cu and Ce
+   1) [GMP.param](data/GMP.param) (from UFF as implemented in [Openbabel](https://github.com/openbabel/openbabel/blob/master/data/qeq.txt)) 
+   2) [MEPO.param](data/MEPO.param) from [Kadantsev et al.](http://pubs.acs.org/doi/10.1021/jz401479k)
+   3) [GULP.param](data/GULP.param) same as GMP except for Cu and Ce
 
  * This version of the code allows reading cif files and printig charge.cif, but please consider that the parsing of the cif file is done in the following way (and therefore not all cif files are compatible):
    1) it reads cell info from _cell_length_a, _b, _c, _cell_angle_alpha, _beta, _gamma
