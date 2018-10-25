@@ -37,6 +37,10 @@ void  InitGeometry(tGeometry *geometry, char *fname)
      char tmpstr3[MAXSTRL];
      char tmpstr4[MAXSTRL];
      char tmpstr5[MAXSTRL];
+   char fline[100];
+   char * tmpstr0;
+   char tmpstr6[100];
+   double A, B, C, a, b, g; 
      double axis1[3], axis2[3], axis3[3];
    
      fp = fopen(fname, "r"); 
@@ -47,10 +51,46 @@ void  InitGeometry(tGeometry *geometry, char *fname)
      }   else { 	 
 	 printf("geometry file %s is open\n", fname); 
 	 
-	 /* read 1 comment lines */ 
+	 /* read 1 comment lines 
          fgets(tmpstr1, MAXSTRL, fp); 	
          printf("Comment line 1 %s", tmpstr1); 
+         */
+    while (fgets(fline, 100, fp) != NULL) {
+        if (strstr(fline, "_cell_length_a") != NULL) { 
+            tmpstr0=strtok(fline, " ");
+            tmpstr0=strtok(NULL, " ");
+            A = atof(tmpstr0);
+        }
+        if (strstr(fline, "_cell_length_b") != NULL) {
+            tmpstr0=strtok(fline, " ");
+            tmpstr0=strtok(NULL, " ");
+            B = atof(tmpstr0);
+        }
+        if (strstr(fline, "_cell_length_c") != NULL) {
+            tmpstr0=strtok(fline, " ");
+            tmpstr0=strtok(NULL, " ");
+            C = atof(tmpstr0);
+        }
+        if (strstr(fline, "_cell_angle_alpha") != NULL) {
+            tmpstr0=strtok(fline, " ");
+            tmpstr0=strtok(NULL, " ");
+            a = atof(tmpstr0);
+        }
+        if (strstr(fline, "_cell_angle_beta") != NULL) {
+            tmpstr0=strtok(fline, " ");
+            tmpstr0=strtok(NULL, " ");
+            b = atof(tmpstr0);
+        }
+        if (strstr(fline, "_cell_angle_gamma") != NULL) {
+            tmpstr0=strtok(fline, " ");
+            tmpstr0=strtok(NULL, " ");
+            g = atof(tmpstr0);
+         printf("Lattice lenghts: A %10.7f B %10.7f C %10.7f\n", A, B, C );
+         printf("Lattice angles: alpha %10.7f beta %10.7f gamma %10.7f\n", a, b, g );
+        }
+    }
 
+         
          /* read 3 lattice vectors */ 	 
 	 fscanf(fp, "%s %s %s\n", tmpstr1, tmpstr2, tmpstr3);  
 	 geometry->av1[0] = atof(tmpstr1); 
@@ -62,7 +102,7 @@ void  InitGeometry(tGeometry *geometry, char *fname)
 	 geometry->av2[1] = atof(tmpstr2); 
 	 geometry->av2[2] = atof(tmpstr3); 
 	 printf("Lattice vector #2 %10.7f %10.7f %10.7f\n", geometry->av2[0],  geometry->av2[1], geometry->av2[2] );  
-       
+     
 	 fscanf(fp, "%s %s %s\n", tmpstr1, tmpstr2, tmpstr3);  
 	 geometry->av3[0] = atof(tmpstr1); 
 	 geometry->av3[1] = atof(tmpstr2); 
