@@ -39,5 +39,5 @@ calcaulte_pot 0 repeat.cube
 skip_everything 0
 point_charges_present 0
 include_pceq 0
-imethod 
+imethod 0
  ```
