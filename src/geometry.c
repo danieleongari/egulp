@@ -106,11 +106,12 @@ void  InitGeometry(tGeometry *geometry, char *fname)
     }         
          int countatoms = 0;
          while (fgets(fline, 100, fp) != NULL) {
-           if (strstr(fline, "_atom_site") != NULL) {
+           if (strstr(fline, "_atom_site") != NULL) //stil a header 
               strcpy(tmpstr1,fline); //this will remember the last string before the atoms
-           }
-           if ((strstr(fline, "_atom_site") == NULL) && (fline != "\n"))
+           if ((strstr(fline, "_atom_site") == NULL) && (fline != "\n")) //an atom line
               countatoms++;
+           if (fline == "loop_") //may be the end of the atoms section
+              break;
          }
          geometry->natoms = countatoms; 
 	 printf("Number of atoms is %d\n", geometry->natoms); 
