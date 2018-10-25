@@ -1,8 +1,8 @@
 CC=icc
 CFLAGS=-ipo
-all: egulppot
-egulppot: egulp.o geometry.o scf.o utilsa.o genpot.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o 
-	${CC} ${CFLAGS}  egulp.o geometry.o scf.o utilsa.o genpot.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o `pkg-config --cflags --libs gsl` -o egulppot
+all: egulp
+egulp: egulp.o geometry.o scf.o utilsa.o genpot.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o 
+	${CC} ${CFLAGS}  egulp.o geometry.o scf.o utilsa.o genpot.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o `pkg-config --cflags --libs gsl` -o egulp
 egulpomp: egulp.o geometry.o scf.o utilsa.o genpotomp.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o 
 	${CC} ${CFLAGS}  egulp.o geometry.o scf.o utilsa.o genpotomp.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o `pkg-config --cflags --libs gsl` -openmp -lpthread -o egulpomp
 egulp.o: egulp.c geometry.h scf.h utilsa.h genpot.h param.h grid.h econfig.h pcharge.h eseqparam.h elements.h  
