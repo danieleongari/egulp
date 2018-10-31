@@ -358,6 +358,7 @@ int main(int argc, char *argv[])
       }	
       /* write .cif file with charges*/
       outcif = fopen("charges.cif", "w"); 
+      fprintf(outcif, "data_crystal\n");
       fprintf(outcif, "\n");
       fprintf(outcif, "_cell_length_a %12.7f\n", geometry.cell_len[0]);
       fprintf(outcif, "_cell_length_b %12.7f\n", geometry.cell_len[1]);
