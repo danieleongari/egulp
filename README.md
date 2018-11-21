@@ -8,7 +8,9 @@ Credit to [Kadantsev et al.](http://pubs.acs.org/doi/10.1021/jz401479k)
 
 Prerequisites:
  * C compiler (either icc or gcc)
- * GNU scientific library (GSL)
+ * GNU scientific library (GSL)  
+   for ubuntu: `sudo apt-get install libgsl0-dev`
+ 
 
 ```bash
 cd src
