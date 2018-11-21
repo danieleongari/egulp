@@ -1,5 +1,7 @@
 # eGULP
 
+ * Credit to [Kadantsev et al.](http://pubs.acs.org/doi/10.1021/jz401479k)
+ 
  * Efficient Qeq algorithm for periodic systems. Original method by [Rappé et al.](http://pubs.acs.org/doi/abs/10.1021/j100161a070)
  
  * Example usage:
@@ -32,12 +34,30 @@ prints files `charge.cif`,`charge.dat`,`charge.xyz` and `energy.dat`.
  * File `configure.input` allows to specify extra settings:
  ```
 build_grid 0
-build_grid_from_scratch 1 none 0.25 0.25 0.25 1.0 2.0 0 3.0
+build_grid_from_scratch 1 none 0.25 0.25 0.25 1.0 2.0 0 0.3
 save_grid 0 grid.cube
 calculate_pot_diff 0
-calcaulte_pot 0 repeat.cube
+calculate_pot 0 repeat.cube
 skip_everything 0
 point_charges_present 0
 include_pceq 0
 imethod 0
+ ```
+which stand for:
+ ```
+build_grid ............ {bool}
+build_grid_from_scratch {bool} 
+                        {grid_input name} 
+                        {dx, dy and dz grid spacing}
+                        {vdw_min vdw_max}
+                        {bool, consider only gridpoint between vdw_min and vdw_max}
+save_grid ............. {bool} 
+                        {cube filename}
+calculate_pot_diff .... {bool}
+calculate_pot ......... {0:False, 1: Input pot, 2: output pot} 
+                        {cube filename}
+skip_everything ....... {bool, to skip charge and pot calculation}
+point_charges_present . {bool, to start the method from initial charges}
+include_pceq .......... {bool}
+imethod ............... {0: Qeq, 1: SPLIT-Qeq}
  ```
