@@ -47,15 +47,15 @@ which stand for:
  ```
 build_grid ............ {bool}
 build_grid_from_scratch {bool} 
-                        {grid_input name} 
-                        {dx, dy and dz grid spacing}
-                        {vdw_min vdw_max}
-                        {bool, consider only gridpoint between vdw_min and vdw_max}
+                         {grid_input name} 
+                         {dx, dy and dz grid spacing}
+                         {vdw_min vdw_max}
+                         {bool, consider only gridpoint between vdw_min and vdw_max}
 save_grid ............. {bool} 
-                        {cube filename}
+                         {cube filename}
 calculate_pot_diff .... {bool}
 calculate_pot ......... {0:False, 1: Input pot, 2: output pot} 
-                        {cube filename}
+                         {cube filename}
 skip_everything ....... {bool, to skip charge and pot calculation}
 point_charges_present . {bool, to start the method from initial charges}
 include_pceq .......... {bool}
