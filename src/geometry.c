@@ -141,12 +141,15 @@ void  InitGeometry(tGeometry *geometry, char *fname)
             	      fgets(fline,100,fp);
                       tmpstr0=strtok(fline, " ");
                       tmpstr0=strtok(NULL, " ");
-                         strcpy(atoms_sym,tmpstr0);
-                         //lookup the corrisponding atom number
-                         for(a = 0; a < 107; a++) {
-                            if (strcmp(atoms_sym, atsym_nospace[a]) == 0)
-                               geometry->atoms_num[i] = a+1;
-                         }
+                      //strcpy(atoms_sym,tmpstr0);
+                      //gcc on MacOS doesn't like copying char * into char[2]
+                      strncpy(atoms_sym, tmpstr0, sizeof(atoms_sym));
+                      atoms_sym[2] = '\0'; // need to add null character manually
+                      //lookup the corrisponding atom number
+                      for(a = 0; a < 107; a++) {
+                         if (strcmp(atoms_sym, atsym_nospace[a]) == 0)
+                            geometry->atoms_num[i] = a+1;
+                      }
                       tmpstr0=strtok(NULL, " "); 
 		         geometry->atoms_fract[3*i+0] = atof(tmpstr0); 
                       tmpstr0=strtok(NULL, " ");

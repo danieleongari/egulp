@@ -10,6 +10,7 @@ Prerequisites:
  * C compiler (either icc or gcc)
  * GNU scientific library (GSL)  
    for ubuntu: `sudo apt-get install libgsl0-dev`
+   for : `sudo port install gsl`
  
 
 ```bash
