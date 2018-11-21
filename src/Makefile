@@ -1,5 +1,5 @@
-CC=icc
-CFLAGS=-ipo
+include gcc.arch
+
 all: egulp
 egulp: egulp.o geometry.o scf.o utilsa.o genpot.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o 
 	${CC} ${CFLAGS}  egulp.o geometry.o scf.o utilsa.o genpot.o interact.o param.o vdw.o grid.o cell.o econfig.o pcharge.o eseqparam.o psinv.o elements.o `pkg-config --cflags --libs gsl` -o egulp

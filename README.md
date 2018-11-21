@@ -1,13 +1,25 @@
 # eGULP
 
- * Credit to [Kadantsev et al.](http://pubs.acs.org/doi/10.1021/jz401479k)
+Efficient Qeq algorithm for periodic systems. Original method by [Rappé et al.](http://pubs.acs.org/doi/abs/10.1021/j100161a070)
+
+Credit to [Kadantsev et al.](http://pubs.acs.org/doi/10.1021/jz401479k)
  
- * Efficient Qeq algorithm for periodic systems. Original method by [Rappé et al.](http://pubs.acs.org/doi/abs/10.1021/j100161a070)
- 
- * Example usage:
- ```
- egulp HKUST.cif GMP.param configure.input 
- ```
+## Installation
+
+Prerequisites:
+ * C compiler (either icc or gcc)
+ * GNU scientific library (GSL)
+
+```bash
+cd src
+# edit Makefile to select compiler
+make 
+```
+
+## Usage
+```
+egulp HKUST.cif GMP.param configure.input 
+```
 prints files `charge.cif`,`charge.dat`,`charge.xyz` and `energy.dat`.
 
  * Consider using one of the following parameters: 

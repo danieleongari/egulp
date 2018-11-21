@@ -1,0 +1,2 @@
+CC=gcc
+CFLAGS=-I/opt/local/include
