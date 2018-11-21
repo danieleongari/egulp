@@ -1,0 +1,2 @@
+CC=icc
+CFLAGS=-ipo
