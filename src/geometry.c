@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include <string.h>
 
@@ -130,12 +131,22 @@ void  InitGeometry(tGeometry *geometry, char *fname)
                  geometry->atoms_charge[i] = 0.0;
                  geometry->input_atoms_charge[i] = 0.0;
          }
+
          printf("Rewind file %s to read the atoms after line: %s\n", fname, tmpstr1); 
          rewind(fp);
+         bool found_atoms = false;
          while (fgets(fline, 100, fp) != NULL) {
-           if(strstr(tmpstr1,fline) != NULL) 
+            // look for occurence of '_atomic_sites' in fline
+           if(strstr(fline, tmpstr1) != NULL) {
+             found_atoms=true;
              break;
+            }
          }
+         if(!found_atoms)  { 
+	      printf("Unable to find _atomic_sites tag\n"); 
+	      exit(-1); 
+	 }
+
          printf("Reading atoms\n");
          for(i = 0; i < geometry->natoms; i++) {
             	      fgets(fline,100,fp);

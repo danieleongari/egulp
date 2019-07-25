@@ -15,7 +15,7 @@ Prerequisites:
 
 ```bash
 cd src
-# edit Makefile to select compiler
+# edit Makefile to select compiler (gcc.arch or intel.arch)
 make 
 ```
 

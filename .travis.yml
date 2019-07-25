@@ -1,0 +1,16 @@
+language: c
+
+addons:
+  apt:
+    packages:
+    - libgsl0-dev
+
+install:
+  - cd src && make && cd - 
+  - export PATH=$PATH:`pwd`/src
+
+script:
+  # run example
+  - cd example/HKUST1 && egulp HKUST1.cif GMP.param configure.input && cd -
+  # run CIF parsing tests
+  - cd tests/cif_parsing && ./run.sh && cd -
