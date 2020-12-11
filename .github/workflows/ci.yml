@@ -1,0 +1,35 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+
+  ubuntu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install lib-gsl
+      run: |
+        sudo apt update
+        sudo apt install libgsl0-dev
+
+    - name: Make egulp
+      run: |
+        cd src
+        make
+        echo `pwd` >> $GITHUB_PATH
+
+    - name: Run example
+      run: |
+        cd example/HKUST1
+        egulp HKUST1.cif GMP.param configure.input
+      env:
+        PATH:
+
+    - name: Run CIF parsing tests
+      run: |
+        cd tests/cif_parsing
+        ./run.sh
