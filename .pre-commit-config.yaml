@@ -20,11 +20,9 @@
     exclude: *exclude_files
 
 - repo: https://gitlab.com/daverona/pre-commit/cpp
-  rev: 0.8.0               # use the most recent version
+  rev: 0.8.0
   hooks:
   - id: docker-clang-format
   - id: docker-cppcheck
-  - id: cpplint
-
-    #  - id: clang-format
-    #    args: ["-style=LLVM"]  # use LLVM Coding Standards
+  # enable below for linting
+  # - id: cpplint

@@ -1,2 +1,2 @@
 CC=icc
-CFLAGS=-ipo
+CFLAGS=-ipo -O2

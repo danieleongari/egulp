@@ -1,2 +1,5 @@
 CC=gcc
-CFLAGS=-I/opt/local/include -g
+CFLAGS=-I/opt/local/include -O2
+
+# Enable for debugging
+# CFLAGS += -g

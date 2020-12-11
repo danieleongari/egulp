@@ -1,6 +1,9 @@
 #!/bin/bash
-# test that we can parse cif file in both formats
+# Test parsing a couple of CIF files
 set -e
 
-egulp manage_crystal.cif GMP.param configure.input
-egulp pycifrw.cif GMP.param configure.input
+for cif in *.cif; do
+    echo "## Running $cif"
+    ../../src/egulp $cif GMP.param configure.input > $cif.log
+    echo "## Success $cif"
+done

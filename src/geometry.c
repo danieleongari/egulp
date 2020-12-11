@@ -38,7 +38,7 @@ void InitGeometry(tGeometry *geometry, char *fname) {
   FILE *fp;
   int i, a;
   char tmpstr1[MAXSTRL];
-  char atoms_sym[2];
+  char atoms_sym[3];
   char fline[100];
   char *tmpstr0;
   double tempd;
