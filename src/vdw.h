@@ -1,7 +1,7 @@
-#ifndef  _VDW_H 
+#ifndef _VDW_H
 #define _VDW_H
 
-void SetVDWRADIUS(double *vdw); 
-void SetCOVRADIUS(double *rcov); 
+void SetVDWRADIUS(double *vdw);
+void SetCOVRADIUS(double *rcov);
 
 #endif
