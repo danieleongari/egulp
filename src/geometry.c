@@ -1,5 +1,6 @@
 #include "geometry.h"
 
+#include <ctype.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -23,6 +24,8 @@
 double matrix_det(double *mat, int n);
 void matrix_inverse(double *mat, int n, double *imat);
 
+const int max_line_length = 200;
+
 const char *atsym_nospace[] = {
     "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",   "F",   "Ne",   "Na", "Mg",
     "Al", "Si", "P",  "S",  "Cl", "Ar", "K",  "Ca",  "Sc",  "Ti",   "V",  "Cr",
@@ -34,12 +37,28 @@ const char *atsym_nospace[] = {
     "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa", "U",   "Np",  "Pu",   "Am", "Cm",
     "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr", "O_N", "O_S", "O_SH", "H_O"};
 
+bool isBlank(char const *line) {
+  char *ch;
+  bool is_blank = true;
+
+  // Iterate through each character.
+  for (ch = line; *ch != '\0'; ++ch) {
+    if (!isspace(*ch)) {
+      // Found a non-whitespace character.
+      is_blank = false;
+      break;
+    }
+  }
+
+  return is_blank;
+}
+
 void InitGeometry(tGeometry *geometry, char *fname) {
   FILE *fp;
   int i, a;
   char tmpstr1[MAXSTRL];
   char atoms_sym[3];
-  char fline[100];
+  char fline[max_line_length];
   char *tmpstr0;
   double tempd;
 
@@ -51,7 +70,7 @@ void InitGeometry(tGeometry *geometry, char *fname) {
   } else {
     printf("geometry file %s is open\n", fname);
 
-    while (fgets(fline, 100, fp) != NULL) {
+    while (fgets(fline, max_line_length, fp) != NULL) {
       // Read the cell parameters from cif
       if (strstr(fline, "_cell_length_a") != NULL) {
         tmpstr0 = strtok(fline, " ");
@@ -124,12 +143,12 @@ void InitGeometry(tGeometry *geometry, char *fname) {
       if (strstr(fline, "_atom_site_fract_x") != NULL) break;
     }
     int countatoms = 0;
-    while (fgets(fline, 100, fp) != NULL) {
+    while (fgets(fline, max_line_length, fp) != NULL) {
       if (strstr(fline, "_atom_site") != NULL)  // stil a header
         strcpy(tmpstr1,
                fline);  // this will remember the last string before the atoms
       if ((strstr(fline, "_atom_site") == NULL) &&
-          (fline != "\n"))  // an atom line
+          (!isBlank(fline)))  // an atom line
         countatoms++;
       if (fline == "loop_")  // may be the end of the atoms section
         break;
@@ -161,7 +180,7 @@ void InitGeometry(tGeometry *geometry, char *fname) {
     printf("Rewind file %s to read the atoms after line: %s\n", fname, tmpstr1);
     rewind(fp);
     bool found_atoms = false;
-    while (fgets(fline, 100, fp) != NULL) {
+    while (fgets(fline, max_line_length, fp) != NULL) {
       // look for occurence of '_atomic_sites' in fline
       if (strstr(fline, tmpstr1) != NULL) {
         found_atoms = true;
@@ -174,14 +193,14 @@ void InitGeometry(tGeometry *geometry, char *fname) {
     }
 
     printf("Reading atoms\n");
-    for (i = 0; i < geometry->natoms; i++) {
-      fgets(fline, 100, fp);
+    for (i = 0; i < geometry->natoms; ++i) {
+      fgets(fline, max_line_length, fp);
       tmpstr0 = strtok(fline, " ");
       tmpstr0 = strtok(NULL, " ");
-      // strcpy(atoms_sym,tmpstr0);
+      strcpy(atoms_sym, tmpstr0);
       // gcc on MacOS doesn't like copying char * into char[2]
-      strncpy(atoms_sym, tmpstr0, sizeof(atoms_sym));
-      atoms_sym[2] = '\0';  // need to add null character manually
+      // strncpy(atoms_sym, tmpstr0, sizeof(atoms_sym));
+      // atoms_sym[2] = '\0';  // need to add null character manually
       // lookup the corrisponding atom number
       for (a = 0; a < 107; a++) {
         if (strcmp(atoms_sym, atsym_nospace[a]) == 0)

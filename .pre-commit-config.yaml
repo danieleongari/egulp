@@ -7,8 +7,7 @@
   - id: double-quote-string-fixer
     exclude: &exclude_files >
       (?x)^(
-          tests/data/.*|
-          examples/data/.*|
+          .*.cif
       )$
   - id: end-of-file-fixer
     exclude: *exclude_files
